@@ -44,6 +44,13 @@ function add(text, cls) {
   d.scrollIntoView({ block: "end" });
 }
 
+q.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    form.requestSubmit();
+  }
+});
+
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
   const text = q.value.trim();

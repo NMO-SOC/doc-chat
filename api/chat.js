@@ -77,6 +77,8 @@ module.exports = async (req, res) => {
       return;
     }
     const reply = data.choices && data.choices[0] && data.choices[0].message.content;
+    // ponytail: console log for review in Vercel Runtime Logs; remove or redact before going public.
+    console.log(JSON.stringify({ at: new Date().toISOString(), ip, user: history[history.length - 1].content, reply: reply || "" }));
     res.status(200).json({ reply: reply || "" });
   } catch (e) {
     res.status(502).json({ error: "Could not reach the model service." });

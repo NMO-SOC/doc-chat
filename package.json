@@ -1,0 +1,6 @@
+{
+  "name": "doc-chat",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Static pages plus a Vercel function that chats with a clearly labelled AI persona."
+}

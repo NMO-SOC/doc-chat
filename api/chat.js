@@ -11,7 +11,8 @@ const MAX_PER_WINDOW = 10;      // requests per IP per window
 // ponytail: in-memory limiter, resets on cold start; upgrade to a KV store if abuse appears.
 const hits = new Map();
 
-const SYSTEM = fs.readFileSync(path.join(__dirname, "..", "system-prompt.txt"), "utf8");
+// PERSONA (env var) overrides the bundled generic prompt. Keep trial personas in env vars only.
+const SYSTEM = process.env.PERSONA || fs.readFileSync(path.join(__dirname, "system-prompt.txt"), "utf8");
 
 function rateLimited(ip) {
   const now = Date.now();
@@ -39,6 +40,12 @@ module.exports = async (req, res) => {
   let body = req.body;
   if (typeof body === "string") {
     try { body = JSON.parse(body); } catch { body = {}; }
+  }
+
+  // Passphrase gate: only enforced when ACCESS_PASSPHRASE is set.
+  if (process.env.ACCESS_PASSPHRASE && (!body || body.passphrase !== process.env.ACCESS_PASSPHRASE)) {
+    res.status(401).json({ error: "Wrong passphrase." });
+    return;
   }
   const incoming = Array.isArray(body && body.messages) ? body.messages : [];
   const history = incoming
